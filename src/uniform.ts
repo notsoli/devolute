@@ -5,7 +5,9 @@ export type UniformDescriptor = {
     value: number | number[]
 }
 
-type UniformType = "f32" | "i32"
+type FloatTypes = "f32" | "vec2f" | "vec3f" | "vec4f"
+type IntTypes = "i32" | "vec2i" | "vec3i" | "vec4i"
+type UniformType = FloatTypes | IntTypes
 
 export abstract class Uniform {
     scope: "global" | "local"
@@ -16,14 +18,23 @@ export abstract class Uniform {
     value: number | number[]
     buffer: GPUBuffer
     static create(scope: "global" | "local", index: number, descriptor: UniformDescriptor): Uniform {
-        // sets the size to the number of values
-        const size = (typeof descriptor.value === "number") ? 1 : descriptor.value.length
-
         switch (descriptor.type) {
             case "f32":
-                return new FloatUniform(scope, index, size, descriptor.value)
+                return new FloatUniform(scope, index, 1, descriptor.value, "f32")
+            case "vec2f":
+                return new FloatUniform(scope, index, 2, descriptor.value, "vec2f")
+            case "vec3f":
+                return new FloatUniform(scope, index, 3, descriptor.value, "vec3f")
+            case "vec4f":
+                return new FloatUniform(scope, index, 4, descriptor.value, "vec4f")
             case "i32":
-                return new IntUniform(scope, index, size, descriptor.value)
+                return new IntUniform(scope, index, 1, descriptor.value, "i32")
+            case "vec2i":
+                return new IntUniform(scope, index, 2, descriptor.value, "vec2i")
+            case "vec3i":
+                return new IntUniform(scope, index, 3, descriptor.value, "vec3i")
+            case "vec4i":
+                return new IntUniform(scope, index, 4, descriptor.value, "vec4i")
         }
     }
     set(values: number | number[]) {
@@ -40,7 +51,6 @@ export abstract class Uniform {
 
         this.size = size
         this.value = value
-        this.set(value)
 
         this.buffer = device.createBuffer({
             size: this.size * 4,
@@ -55,18 +65,22 @@ export abstract class Uniform {
 
 class FloatUniform extends Uniform {
     declare array: Float32Array
-    declare type: "f32"
-    constructor(scope: "global" | "local", index: number, size: number, value: number | number[]) {
+    declare type: FloatTypes
+    constructor(scope: "global" | "local", index: number, size: number, value: number | number[], type: FloatTypes) {
         super(scope, index, size, value)
-        this.array = new Float32Array()
+        this.type = type
+        this.array = new Float32Array(size)
+        this.set(value)
     }
 }
 
 class IntUniform extends Uniform {
     declare array: Int32Array
-    declare type: "i32"
-    constructor(scope: "global" | "local", index: number, size: number, value: number | number[]) {
+    declare type: IntTypes
+    constructor(scope: "global" | "local", index: number, size: number, value: number | number[], type: IntTypes) {
         super(scope, index, size, value)
-        this.array = new Int32Array()
+        this.array = new Int32Array(size)
+        this.type = type
+        this.set(value)
     }
 }
