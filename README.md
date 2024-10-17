@@ -10,7 +10,7 @@ Initialize Devolute with global uniforms, each containing a uniform type and an 
 ```ts
 const data = await Devolute.init({
     uniforms: {
-        frame: { type: "i32", value: 0 },
+        frame: { type: "f32", value: 0 },
     }
 })
 ```
@@ -28,7 +28,7 @@ const frag = `
     fn fragment_main(@builtin(position) pos: vec4f) -> @location(0) vec4f {
         let position = pos.xy / res;
         return vec4(position.x, 0.5 - sin(frame / 25.) / 2, position.y, 1.);
-        }
+    }
 `
 
 const pass = await Devolute.createPass({
