@@ -1,4 +1,4 @@
-import { device } from './app.js'
+import { device } from './devolute.js'
 
 export type UniformDescriptor = {
     type: UniformType
