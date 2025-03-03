@@ -1,5 +1,5 @@
 import { Uniform } from './uniform.js'
-import type { UniformDescriptor } from './uniform.js'
+import type { UniformDescriptor } from './uniform'
 
 /**
  * Represents a single shader pass containing its own uniforms and
@@ -36,7 +36,7 @@ let running = false
  * Stores the global uniforms shared between all passes in the same
  * format as local uniforms.
  */
-interface GlobalConfig {
+export type GlobalConfig = {
     uniforms: {
         [x: string]: UniformDescriptor
     }
@@ -46,7 +46,7 @@ interface GlobalConfig {
  * Represents the name of a uniform and all of its values, but not
  * its type.
  */
-type UniformValueSet<T extends {[x: string]: UniformDescriptor}> = {
+export type UniformValueSet<T extends {[x: string]: UniformDescriptor}> = {
     [P in keyof T]: T[P]["value"]
 }
 
@@ -126,7 +126,7 @@ export async function init<T extends GlobalConfig>(config: T): Promise<UniformVa
  * its fragment shader, and a list of modifiable uniforms with
  * their name, type, and initial values.
  */
-interface PassConfig {
+export type PassConfig = {
     canvas: HTMLCanvasElement
     fragment: string
     uniforms: {

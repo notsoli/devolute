@@ -2,22 +2,34 @@
     "name": "devolute",
     "version": "1.0.0",
     "description": "A tiny WebGPU abstraction for creating fragment shader passes with independent and shared uniforms.",
-    "main": "app.js",
+    "main": "dist/index.js",
+    "module": "dist/index.mjs",
+    "types": "dist/app.d.ts",
+    "files": [
+        "dist"
+    ],
+    "keywords": [
+        "webgpu",
+        "shader"
+    ],
     "scripts": {
+        "prepublish": "tsc",
+        "build": "tsup",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/notsoli/devolute.git"
     },
-    "author": "notsoli",
-    "license": "ISC",
+    "author": "Sam Randa",
+    "license": "MIT",
     "bugs": {
         "url": "https://github.com/notsoli/devolute/issues"
     },
     "homepage": "https://github.com/notsoli/devolute#readme",
     "devDependencies": {
         "@webgpu/types": "^0.1.48",
+        "tsup": "^8.4.0",
         "typescript": "^5.6.3"
     }
 }

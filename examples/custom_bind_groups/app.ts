@@ -1,4 +1,4 @@
-import * as Devolute from '../../src/app.js'
+import * as Devolute from '../../src/index.js'
 
 window.onload = async () => {
     const c1 = document.querySelector("#c1") as HTMLCanvasElement
@@ -56,11 +56,22 @@ window.onload = async () => {
     })
 
     const p1 = await Devolute.createPass({ canvas: c1, fragment: c1_frag,
-        uniforms: { res: { type: "vec2f", value: [ window.innerHeight/2, window.innerHeight/2 ] } } })
+        uniforms: {
+            res: { type: "vec2f", value: [ window.innerHeight/2, window.innerHeight/2 ] }
+        }
+    })
+
     const p2 = await Devolute.createPass({ canvas: c2, fragment: c2_frag,
-        uniforms: { res: { type: "vec2f", value: [ window.innerHeight/1.5, window.innerHeight/1.5 ] } } })
+        uniforms: {
+            res: { type: "vec2f", value: [ window.innerHeight/1.5, window.innerHeight/1.5 ] }
+        }
+    })
+    
     const p3 = await Devolute.createPass({ canvas: c3, fragment: c3_frag,
-        uniforms: { res: { type: "vec2f", value: [ window.innerHeight, window.innerHeight ] } } })
+        uniforms: {
+            res: { type: "vec2f", value: [ window.innerHeight, window.innerHeight ] }
+        }
+    })
 
     Devolute.run(() => {
         data.frame++
