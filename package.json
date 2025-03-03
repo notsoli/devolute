@@ -4,7 +4,7 @@
     "description": "A tiny WebGPU abstraction for creating fragment shader passes with independent and shared uniforms.",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
-    "types": "dist/app.d.ts",
+    "types": "dist/index.d.ts",
     "files": [
         "dist"
     ],
