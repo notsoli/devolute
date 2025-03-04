@@ -5,22 +5,12 @@ import type { UniformDescriptor } from './uniform'
  * Represents a single shader pass containing its own uniforms and
  * render pipeline (fragment shader, etc.) to be rendered on a single canvas.
  */
-class Pass {
+type Pass = {
     ctx: GPUCanvasContext
     renderPipeline: GPURenderPipeline
     vertexBuffer: GPUBuffer
     uniforms: {[x: string]: Uniform}
-    customBindGroup: GPUBindGroup | null
-
-    constructor(ctx: GPUCanvasContext, renderPipeline: GPURenderPipeline,
-                vertexBuffer: GPUBuffer, uniforms: {[x: string]: Uniform} = {},
-                customBindGroup: GPUBindGroup | null = null) {
-        this.ctx = ctx
-        this.renderPipeline = renderPipeline
-        this.vertexBuffer = vertexBuffer
-        this.uniforms = uniforms
-        this.customBindGroup = customBindGroup
-    }
+    customBindGroup?: GPUBindGroup
 }
 
 export let device: GPUDevice
@@ -259,10 +249,10 @@ export async function createPass<T extends PassConfig>(config: T): Promise<Unifo
     // a middleman function instead
     let passProxy = valueSet, pass: Pass
     if (hasUniforms) {
-        pass = new Pass(ctx, renderPipeline, vertexBuffer, uniforms, customBindGroup)
+        pass = { ctx, renderPipeline, vertexBuffer, uniforms, customBindGroup }
         passProxy = new Proxy(valueSet, { set: createLocalUniformModifier(pass) })
     } else {
-        pass = new Pass(ctx, renderPipeline, vertexBuffer)
+        pass = { ctx, renderPipeline, vertexBuffer, uniforms: {} }
     }
 
     passes.push(pass)
@@ -383,4 +373,13 @@ function createLocalUniformModifier(pass: Pass) {
  */
 export function clearPasses() {
     passes = []
+}
+
+/**
+ * Removes a specific shader pass from the current set of shader passes.
+ * 
+ * @param pass The pass to be removed
+ */
+export function removePass(pass: Pass) {
+    passes = passes.filter(p => p !== pass)
 }
