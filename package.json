@@ -1,12 +1,12 @@
 {
     "name": "devolute",
-    "version": "1.0.1",
+    "version": "1.2.0",
     "description": "A tiny WebGPU abstraction for creating fragment shader passes with independent and shared uniforms.",
-    "main": "dist/index.js",
-    "module": "dist/index.mjs",
-    "types": "dist/index.d.ts",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
     "files": [
-        "dist"
+        "./dist"
     ],
     "keywords": [
         "webgpu",
