@@ -5,7 +5,7 @@ import type { UniformDescriptor } from './uniform'
  * Represents a single shader pass containing its own uniforms and
  * render pipeline (fragment shader, etc.) to be rendered on a single canvas.
  */
-type Pass = {
+export type Pass = {
     ctx: GPUCanvasContext
     renderPipeline: GPURenderPipeline
     vertexBuffer: GPUBuffer
@@ -106,6 +106,12 @@ export async function init<T extends GlobalConfig>(config: T): Promise<UniformVa
         entries: bindGroupEntries
     })
 
+    // write uniform values to buffer
+    for (const key in globalUniforms) {
+        const uniform = globalUniforms[key]
+        device.queue.writeBuffer(uniform.buffer, 0, uniform.array)
+    }
+
     // track when uniform values change and make sure they go through
     // a middleman function instead
     return new Proxy(valueSet, { set: modifyUniform })
@@ -132,11 +138,11 @@ export type PassConfig = {
  * shader onto, the shader code, and a list of modifiable uniforms with
  * their name, type, and initial values.
  * 
- * @returns An object containing the name and values for each local uniform.
- * Directly setting its attributes will cause the respective uniform values
- * to change within each shader pass.
+ * @returns The generated Pass, as well was an object containing the name
+ * and values for each local uniform. Directly setting its attributes will
+ * cause the respective uniform values to change within each shader pass.
  */
-export async function createPass<T extends PassConfig>(config: T): Promise<UniformValueSet<T["uniforms"]>> {
+export async function createPass<T extends PassConfig>(config: T): Promise<{ pass: Pass, data: UniformValueSet<T["uniforms"]>}> {
     const hasUniforms = (config.uniforms)
 
     // define a boilerplate vertex shader
@@ -255,8 +261,13 @@ export async function createPass<T extends PassConfig>(config: T): Promise<Unifo
         pass = { ctx, renderPipeline, vertexBuffer, uniforms: {} }
     }
 
+    for (const key in pass.uniforms) {
+        const uniform = pass.uniforms[key]
+        device.queue.writeBuffer(uniform.buffer, 0, uniform.array)
+    }
+
     passes.push(pass)
-    return passProxy
+    return { pass, data: passProxy }
 }
 
 /**
@@ -268,19 +279,6 @@ export async function createPass<T extends PassConfig>(config: T): Promise<Unifo
  */
 export async function run(_update: () => void) {
     update = _update
-
-    // write uniform values to buffer
-    for (const key in globalUniforms) {
-        const uniform = globalUniforms[key]
-        device.queue.writeBuffer(uniform.buffer, 0, uniform.array)
-    }
-
-    for (const pass of passes) {
-        for (const key in pass.uniforms) {
-            const uniform = pass.uniforms[key]
-            device.queue.writeBuffer(uniform.buffer, 0, uniform.array)
-        }
-    }
 
     // start the render loop
     if (!running) {
